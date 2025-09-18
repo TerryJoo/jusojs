@@ -1,115 +1,332 @@
-import { describe, expect, it } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import { searchAddresses } from "./index";
 
-// 간단한 유틸리티 함수들 (예제)
-export function add(a: number, b: number): number {
-  return a + b;
-}
+// fetch 모킹을 위한 타입 정의
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
-export function multiply(a: number, b: number): number {
-  return a * b;
-}
-
-export function greet(name: string): string {
-  return `Hello, ${name}!`;
-}
-
-export function isEven(num: number): boolean {
-  return num % 2 === 0;
-}
-
-// 테스트 케이스들
-describe("Math utilities", () => {
-  describe("add", () => {
-    it("should add two positive numbers correctly", () => {
-      expect(add(2, 3)).toBe(5);
-    });
-
-    it("should add negative numbers correctly", () => {
-      expect(add(-2, -3)).toBe(-5);
-    });
-
-    it("should add positive and negative numbers correctly", () => {
-      expect(add(5, -3)).toBe(2);
-    });
-
-    it("should handle zero correctly", () => {
-      expect(add(0, 5)).toBe(5);
-      expect(add(5, 0)).toBe(5);
-    });
+describe("searchAddresses", () => {
+  beforeEach(() => {
+    // fetch 모킹 설정
+    global.fetch = mockFetch;
+    mockFetch.mockClear();
   });
 
-  describe("multiply", () => {
-    it("should multiply two positive numbers correctly", () => {
-      expect(multiply(3, 4)).toBe(12);
-    });
-
-    it("should multiply by zero correctly", () => {
-      expect(multiply(5, 0)).toBe(0);
-    });
-
-    it("should multiply negative numbers correctly", () => {
-      expect(multiply(-2, 3)).toBe(-6);
-    });
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
-  describe("isEven", () => {
-    it("should return true for even numbers", () => {
-      expect(isEven(2)).toBe(true);
-      expect(isEven(4)).toBe(true);
-      expect(isEven(100)).toBe(true);
-    });
+  it("should search addresses with default options", async () => {
+    // 실제 API 응답 형태 (문자열로 숫자 필드들이 옴)
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "정상",
+          countPerPage: "10",
+          totalCount: "2",
+          errorCode: "0",
+          currentPage: "1",
+        },
+        juso: [
+          {
+            detBdNmList: "",
+            engAddr: "317 Dosan-daero, Gangnam-gu, Seoul",
+            rn: "도산대로",
+            emdNm: "신사동",
+            zipNo: "06021",
+            roadAddrPart2: " (신사동)",
+            emdNo: "02",
+            sggNm: "강남구",
+            jibunAddr: "서울특별시 강남구 신사동 651-24 호림아트센터 1빌딩",
+            siNm: "서울특별시",
+            roadAddrPart1: "서울특별시 강남구 도산대로 317",
+            bdNm: "호림아트센터 1빌딩",
+            admCd: "1168010700",
+            udrtYn: "0",
+            lnbrMnnm: "651",
+            roadAddr: "서울특별시 강남구 도산대로 317 (신사동)",
+            lnbrSlno: "24",
+            buldMnnm: "317",
+            bdKdcd: "0",
+            liNm: "",
+            rnMgtSn: "116802122001",
+            mtYn: "0",
+            bdMgtSn: "1168010700106510023000001",
+            buldSlno: "0",
+          },
+        ],
+      },
+    };
 
-    it("should return false for odd numbers", () => {
-      expect(isEven(1)).toBe(false);
-      expect(isEven(3)).toBe(false);
-      expect(isEven(99)).toBe(false);
-    });
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
 
-    it("should handle zero correctly", () => {
-      expect(isEven(0)).toBe(true);
-    });
+    const result = await searchAddresses("도산대로");
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://business.juso.go.kr/addrlink/addrLinkApi.do",
+      {
+        method: "POST",
+        body: expect.any(URLSearchParams),
+      }
+    );
+
+    expect(result.results.common.currentPage).toBe(1);
+    expect(result.results.common.countPerPage).toBe(10);
+    expect(result.results.common.totalCount).toBe(2);
+    expect(result.results.juso).toHaveLength(1);
+    expect(result.results.juso[0]?.roadAddr).toBe(
+      "서울특별시 강남구 도산대로 317 (신사동)"
+    );
   });
-});
 
-describe("String utilities", () => {
-  describe("greet", () => {
-    it("should greet with a name", () => {
-      expect(greet("World")).toBe("Hello, World!");
+  it("should search addresses with custom options", async () => {
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "정상",
+          countPerPage: "5",
+          totalCount: "1",
+          errorCode: "0",
+          currentPage: "2",
+        },
+        juso: [],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
+
+    const result = await searchAddresses("강남구", {
+      countPerPage: 5,
+      currentPage: 2,
+      confmKey: "test-key",
     });
 
-    it("should greet with empty string", () => {
-      expect(greet("")).toBe("Hello, !");
-    });
-
-    it("should greet with special characters", () => {
-      expect(greet("김철수")).toBe("Hello, 김철수!");
-    });
+    expect(result.results.common.currentPage).toBe(2);
+    expect(result.results.common.countPerPage).toBe(5);
+    expect(result.results.common.totalCount).toBe(1);
   });
-});
 
-// 비동기 함수 테스트 예제
-export async function fetchData(): Promise<{ id: number; name: string }> {
-  // 실제로는 API 호출을 시뮬레이션
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ id: 1, name: "Test Data" });
-    }, 100);
+  it("should handle API error response", async () => {
+    const mockErrorResponse = {
+      results: {
+        common: {
+          errorMessage: "인증키가 유효하지 않습니다.",
+          countPerPage: "0",
+          totalCount: "0",
+          errorCode: "E0001",
+          currentPage: "0",
+        },
+        juso: [],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockErrorResponse),
+    } as Response);
+
+    const result = await searchAddresses("테스트", {
+      confmKey: "invalid-key",
+    });
+
+    expect(result.results.common.errorCode).toBe("E0001");
+    expect(result.results.common.errorMessage).toBe(
+      "인증키가 유효하지 않습니다."
+    );
+    expect(result.results.juso).toHaveLength(0);
   });
-}
 
-describe("Async utilities", () => {
-  describe("fetchData", () => {
-    it("should fetch data successfully", async () => {
-      const data = await fetchData();
-      expect(data).toEqual({ id: 1, name: "Test Data" });
+  it("should convert string numbers to actual numbers in common object", async () => {
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "정상",
+          countPerPage: "15",
+          totalCount: "100",
+          errorCode: "0",
+          currentPage: "3",
+        },
+        juso: [],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
+
+    const result = await searchAddresses("테스트");
+
+    expect(typeof result.results.common.currentPage).toBe("number");
+    expect(typeof result.results.common.countPerPage).toBe("number");
+    expect(typeof result.results.common.totalCount).toBe("number");
+    expect(result.results.common.currentPage).toBe(3);
+    expect(result.results.common.countPerPage).toBe(15);
+    expect(result.results.common.totalCount).toBe(100);
+  });
+
+  it("should handle empty keyword", async () => {
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "검색어를 입력해주세요.",
+          countPerPage: "0",
+          totalCount: "0",
+          errorCode: "E0002",
+          currentPage: "0",
+        },
+        juso: [],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
+
+    const result = await searchAddresses("");
+
+    expect(result.results.common.errorCode).toBe("E0002");
+    expect(result.results.common.errorMessage).toBe("검색어를 입력해주세요.");
+  });
+
+  it("should handle network error", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+    await expect(searchAddresses("테스트")).rejects.toThrow("Network error");
+  });
+
+  it("should handle malformed JSON response", async () => {
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.reject(new Error("Invalid JSON")),
+    } as Response);
+
+    await expect(searchAddresses("테스트")).rejects.toThrow("Invalid JSON");
+  });
+
+  it("should use correct URL parameters", async () => {
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "정상",
+          countPerPage: "10",
+          totalCount: "0",
+          errorCode: "0",
+          currentPage: "1",
+        },
+        juso: [],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
+
+    await searchAddresses("강남구", {
+      countPerPage: 20,
+      currentPage: 1,
+      resultType: "xml",
+      confmKey: "test-key",
     });
 
-    it("should have correct data structure", async () => {
-      const data = await fetchData();
-      expect(data).toHaveProperty("id");
-      expect(data).toHaveProperty("name");
-      expect(typeof data.id).toBe("number");
-      expect(typeof data.name).toBe("string");
-    });
+    const fetchCall = mockFetch.mock.calls[0];
+    if (fetchCall && fetchCall[1]) {
+      const body = fetchCall[1].body as URLSearchParams;
+
+      expect(body.get("keyword")).toBe("강남구");
+      expect(body.get("countPerPage")).toBe("20");
+      expect(body.get("currentPage")).toBe("1");
+      expect(body.get("resultType")).toBe("xml");
+      expect(body.get("confmKey")).toBe("test-key");
+    }
+  });
+
+  it("should handle multiple address results", async () => {
+    const mockApiResponse = {
+      results: {
+        common: {
+          errorMessage: "정상",
+          countPerPage: "10",
+          totalCount: "3",
+          errorCode: "0",
+          currentPage: "1",
+        },
+        juso: [
+          {
+            detBdNmList: "",
+            engAddr: "1 Test Street, Seoul",
+            rn: "테스트로",
+            emdNm: "테스트동",
+            zipNo: "12345",
+            roadAddrPart2: " (테스트동)",
+            emdNo: "01",
+            sggNm: "테스트구",
+            jibunAddr: "서울특별시 테스트구 테스트동 1-1",
+            siNm: "서울특별시",
+            roadAddrPart1: "서울특별시 테스트구 테스트로 1",
+            bdNm: "테스트빌딩",
+            admCd: "1234567890",
+            udrtYn: "0",
+            lnbrMnnm: "1",
+            roadAddr: "서울특별시 테스트구 테스트로 1 (테스트동)",
+            lnbrSlno: "1",
+            buldMnnm: "1",
+            bdKdcd: "0",
+            liNm: "",
+            rnMgtSn: "123456789012",
+            mtYn: "0",
+            bdMgtSn: "1234567890123456789012345",
+            buldSlno: "0",
+          },
+          {
+            detBdNmList: "",
+            engAddr: "2 Test Street, Seoul",
+            rn: "테스트로",
+            emdNm: "테스트동",
+            zipNo: "12345",
+            roadAddrPart2: " (테스트동)",
+            emdNo: "02",
+            sggNm: "테스트구",
+            jibunAddr: "서울특별시 테스트구 테스트동 2-2",
+            siNm: "서울특별시",
+            roadAddrPart1: "서울특별시 테스트구 테스트로 2",
+            bdNm: "테스트빌딩2",
+            admCd: "1234567890",
+            udrtYn: "0",
+            lnbrMnnm: "2",
+            roadAddr: "서울특별시 테스트구 테스트로 2 (테스트동)",
+            lnbrSlno: "2",
+            buldMnnm: "2",
+            bdKdcd: "0",
+            liNm: "",
+            rnMgtSn: "123456789012",
+            mtYn: "0",
+            bdMgtSn: "1234567890123456789012346",
+            buldSlno: "0",
+          },
+        ],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockApiResponse),
+    } as Response);
+
+    const result = await searchAddresses("테스트");
+
+    expect(result.results.juso).toHaveLength(2);
+    expect(result.results.juso[0]?.roadAddr).toBe(
+      "서울특별시 테스트구 테스트로 1 (테스트동)"
+    );
+    expect(result.results.juso[1]?.roadAddr).toBe(
+      "서울특별시 테스트구 테스트로 2 (테스트동)"
+    );
   });
 });
