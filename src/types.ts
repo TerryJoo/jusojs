@@ -6,6 +6,9 @@ export interface ISearchAddressesOptions {
   countPerPage: number;
   currentPage: number;
   resultType: string;
+  /**
+   * @default process.env.JUSO_CONFIRM_KEY
+   */
   confmKey?: string;
 }
 
