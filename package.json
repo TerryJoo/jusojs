@@ -1,7 +1,7 @@
 {
   "name": "jusojs",
   "version": "1.0.0",
-  "description": "API client for Korean address",
+  "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -15,7 +15,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build": "tsc",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
