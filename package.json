@@ -1,5 +1,5 @@
 {
-  "name": "@yungikjoo/jusojs",
+  "name": "terryjoo/jusojs",
   "version": "1.0.0",
   "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yungikjoo/jusojs.git"
+    "url": "git+https://github.com/terryjoo/jusojs.git"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
