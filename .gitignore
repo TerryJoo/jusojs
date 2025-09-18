@@ -7,6 +7,7 @@ pnpm-debug.log*
 
 # Build outputs (lib/ is included in npm package)
 # lib/ - Keep lib/ for npm package distribution
+lib/
 dist/
 build/
 *.tsbuildinfo

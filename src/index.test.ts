@@ -1,3 +1,7 @@
+import { config } from "dotenv";
+import "dotenv/config";
+config({ path: ".env.test.local" });
+
 import {
   afterEach,
   beforeEach,
