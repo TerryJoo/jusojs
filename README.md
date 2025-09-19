@@ -4,8 +4,6 @@ TypeScript client library for Korean road address search using the official [jus
 
 ## Installation
 
-> **Note**: This package is not yet available on npm. Please install from the source or wait for the official release.
-
 ```bash
 npm install jusojs
 ```

@@ -1,9 +1,12 @@
 {
-  "name": "@terryjoo/jusojs",
-  "version": "1.0.0",
+  "name": "jusojs",
+  "version": "1.0.2",
   "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
-  "author": "",
+  "author": {
+    "name": "terryjoo",
+    "email": "jooyungik@gmail.com"
+  },
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,13 +32,6 @@
     "copy:cjs": "cp lib-cjs/index.js lib/index.cjs && cp lib-cjs/index.js.map lib/index.cjs.map && cp lib-cjs/types.js lib/types.cjs && cp lib-cjs/types.js.map lib/types.cjs.map && rm -rf lib-cjs",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run clean && npm run build && npm test"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/terryjoo/jusojs.git"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

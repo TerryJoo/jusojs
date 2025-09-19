@@ -112,7 +112,7 @@ describe("searchAddresses", () => {
     const result = await searchAddresses("강남구", {
       countPerPage: 5,
       currentPage: 2,
-      confmKey: "test-key",
+      confirmKey: "test-key",
     });
 
     expect(result.results.common.currentPage).toBe(2);
@@ -139,7 +139,7 @@ describe("searchAddresses", () => {
     } as Response);
 
     const result = await searchAddresses("테스트", {
-      confmKey: "invalid-key",
+      confirmKey: "invalid-key",
     });
 
     expect(result.results.common.errorCode).toBe("E0001");
@@ -237,7 +237,7 @@ describe("searchAddresses", () => {
       countPerPage: 20,
       currentPage: 1,
       resultType: "xml",
-      confmKey: "test-key",
+      confirmKey: "test-key",
     });
 
     const fetchCall = mockFetch.mock.calls[0];
