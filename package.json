@@ -1,12 +1,20 @@
 {
-  "name": "terryjoo/jusojs",
+  "name": "@terryjoo/jusojs",
   "version": "1.0.0",
   "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
   "author": "",
-  "type": "module",
-  "main": "lib/index.js",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "types": "./lib/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "lib"
   ],
@@ -14,7 +22,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "build": "tsc",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc && npm run copy:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json && npm run copy:cjs",
+    "copy:esm": "cp lib/index.js lib/index.mjs && cp lib/index.js.map lib/index.mjs.map && cp lib/types.js lib/types.mjs && cp lib/types.js.map lib/types.mjs.map",
+    "copy:cjs": "cp lib-cjs/index.js lib/index.cjs && cp lib-cjs/index.js.map lib/index.cjs.map && cp lib-cjs/types.js lib/types.cjs && cp lib-cjs/types.js.map lib/types.cjs.map && rm -rf lib-cjs",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },

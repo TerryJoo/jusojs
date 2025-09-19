@@ -9,7 +9,7 @@ export interface ISearchAddressesOptions {
   /**
    * @default process.env.JUSO_CONFIRM_KEY
    */
-  confmKey?: string;
+  confirmKey?: string;
 }
 
 export interface ISearchAddressesResultCommon {

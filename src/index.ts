@@ -3,24 +3,22 @@ import type {
   ISearchAddressesResponse,
 } from "./types";
 
-const defaultConfmKey = process.env["JUSO_CONFIRM_KEY"];
-
 export async function searchAddresses(
   keyword: string,
   {
     countPerPage = 10,
     currentPage = 1,
     resultType = "json",
-    confmKey = defaultConfmKey,
+    confirmKey = process.env["JUSO_CONFIRM_KEY"],
   }: Partial<ISearchAddressesOptions> = {}
 ): Promise<ISearchAddressesResponse> {
-  if (!confmKey) {
+  if (!confirmKey) {
     throw new Error(
       "confmKey is not set. Please set JUSO_CONFIRM_KEY in the environment variables."
     );
   }
   const params = new URLSearchParams();
-  params.append("confmKey", confmKey);
+  params.append("confmKey", confirmKey);
   params.append("currentPage", currentPage.toString());
   params.append("countPerPage", countPerPage.toString());
   params.append("keyword", keyword);
