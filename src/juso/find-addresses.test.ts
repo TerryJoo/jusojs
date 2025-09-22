@@ -10,7 +10,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
-import { searchAddresses } from "./index";
+import { findAddresses } from "./index";
 
 // fetch 모킹을 위한 타입 정의
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
@@ -77,7 +77,7 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("도산대로", {
+    const result = await findAddresses("도산대로", {
       confirmKey,
     });
 
@@ -89,11 +89,12 @@ describe("searchAddresses", () => {
       }
     );
 
-    expect(result.results.common.currentPage).toBe(1);
-    expect(result.results.common.countPerPage).toBe(10);
-    expect(result.results.common.totalCount).toBe(2);
-    expect(result.results.juso).toHaveLength(1);
-    expect(result.results.juso[0]?.roadAddr).toBe(
+    const data = await result.json();
+    expect(data.results.common.currentPage).toBe("1");
+    expect(data.results.common.countPerPage).toBe("10");
+    expect(data.results.common.totalCount).toBe("2");
+    expect(data.results.juso).toHaveLength(1);
+    expect(data.results.juso[0]?.roadAddr).toBe(
       "서울특별시 강남구 도산대로 317 (신사동)"
     );
   });
@@ -116,15 +117,16 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("강남구", {
+    const result = await findAddresses("강남구", {
       countPerPage: 5,
       currentPage: 2,
       confirmKey,
     });
 
-    expect(result.results.common.currentPage).toBe(2);
-    expect(result.results.common.countPerPage).toBe(5);
-    expect(result.results.common.totalCount).toBe(1);
+    const data = await result.json();
+    expect(data.results.common.currentPage).toBe("2");
+    expect(data.results.common.countPerPage).toBe("5");
+    expect(data.results.common.totalCount).toBe("1");
   });
 
   it("should handle API error response", async () => {
@@ -145,15 +147,16 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockErrorResponse),
     } as Response);
 
-    const result = await searchAddresses("테스트", {
+    const result = await findAddresses("테스트", {
       confirmKey,
     });
 
-    expect(result.results.common.errorCode).toBe("E0001");
-    expect(result.results.common.errorMessage).toBe(
+    const data = await result.json();
+    expect(data.results.common.errorCode).toBe("E0001");
+    expect(data.results.common.errorMessage).toBe(
       "인증키가 유효하지 않습니다."
     );
-    expect(result.results.juso).toHaveLength(0);
+    expect(data.results.juso).toHaveLength(0);
   });
 
   it("should convert string numbers to actual numbers in common object", async () => {
@@ -174,16 +177,17 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("테스트", {
+    const result = await findAddresses("테스트", {
       confirmKey,
     });
 
-    expect(typeof result.results.common.currentPage).toBe("number");
-    expect(typeof result.results.common.countPerPage).toBe("number");
-    expect(typeof result.results.common.totalCount).toBe("number");
-    expect(result.results.common.currentPage).toBe(3);
-    expect(result.results.common.countPerPage).toBe(15);
-    expect(result.results.common.totalCount).toBe(100);
+    const data = await result.json();
+    expect(typeof data.results.common.currentPage).toBe("string");
+    expect(typeof data.results.common.countPerPage).toBe("string");
+    expect(typeof data.results.common.totalCount).toBe("string");
+    expect(data.results.common.currentPage).toBe("3");
+    expect(data.results.common.countPerPage).toBe("15");
+    expect(data.results.common.totalCount).toBe("100");
   });
 
   it("should handle empty keyword", async () => {
@@ -204,34 +208,23 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("", {
+    const result = await findAddresses("", {
       confirmKey,
     });
 
-    expect(result.results.common.errorCode).toBe("E0002");
-    expect(result.results.common.errorMessage).toBe("검색어를 입력해주세요.");
+    const data = await result.json();
+    expect(data.results.common.errorCode).toBe("E0002");
+    expect(data.results.common.errorMessage).toBe("검색어를 입력해주세요.");
   });
 
   it("should handle network error", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
     await expect(
-      searchAddresses("테스트", {
+      findAddresses("테스트", {
         confirmKey,
       })
     ).rejects.toThrow("Network error");
-  });
-
-  it("should handle malformed JSON response", async () => {
-    mockFetch.mockResolvedValueOnce({
-      json: () => Promise.reject(new Error("Invalid JSON")),
-    } as Response);
-
-    await expect(
-      searchAddresses("테스트", {
-        confirmKey,
-      })
-    ).rejects.toThrow("Invalid JSON");
   });
 
   it("should use correct URL parameters", async () => {
@@ -252,7 +245,7 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    await searchAddresses("강남구", {
+    await findAddresses("강남구", {
       countPerPage: 20,
       currentPage: 1,
       resultType: "xml",
@@ -343,15 +336,16 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("테스트", {
+    const result = await findAddresses("테스트", {
       confirmKey,
     });
 
-    expect(result.results.juso).toHaveLength(2);
-    expect(result.results.juso[0]?.roadAddr).toBe(
+    const data = await result.json();
+    expect(data.results.juso).toHaveLength(2);
+    expect(data.results.juso[0]?.roadAddr).toBe(
       "서울특별시 테스트구 테스트로 1 (테스트동)"
     );
-    expect(result.results.juso[1]?.roadAddr).toBe(
+    expect(data.results.juso[1]?.roadAddr).toBe(
       "서울특별시 테스트구 테스트로 2 (테스트동)"
     );
   });

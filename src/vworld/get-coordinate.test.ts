@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { searchGeocode } from "./search-geocode";
+import { getCoordinate } from "./index";
 config({ path: ".env.test.local" });
 
 const key = process.env["VWORLD_KEY"];
@@ -7,9 +7,9 @@ if (!key) {
   throw new Error("VWORLD_KEY is not set");
 }
 
-describe("searchGeocode", () => {
+describe("getCoordinate", () => {
   it("should return latitude and longitude for a valid address", async () => {
-    await searchGeocode("서울특별시 중구 세종대로 110", {
+    await getCoordinate("서울특별시 중구 세종대로 110", {
       key,
       type: "ROAD",
     }).then((result) => {
@@ -24,7 +24,7 @@ describe("searchGeocode", () => {
   });
 
   it("should return an error for an invalid address", async () => {
-    await searchGeocode("Invalid Address", {
+    await getCoordinate("Invalid Address", {
       key,
       type: "ROAD",
     }).then(async (result) => {
@@ -55,7 +55,7 @@ describe("searchGeocode", () => {
   });
 
   it("should return an error for an invalid key", async () => {
-    await searchGeocode("서울특별시 중구 세종대로 110", {
+    await getCoordinate("서울특별시 중구 세종대로 110", {
       key: "Invalid Key",
       type: "ROAD",
     }).then(async (result) => {
@@ -81,13 +81,12 @@ describe("searchGeocode", () => {
   });
 
   it("should return a success response", async () => {
-    await searchGeocode("서울특별시 중구 세종대로 110", {
+    await getCoordinate("서울특별시 중구 세종대로 110", {
       key,
       type: "ROAD",
     }).then(async (result) => {
       expect(result.ok).toBe(true);
       const body = await result.json();
-      console.log(body);
       expect(body.response.service.name).toBe("address");
       expect(body.response.service.version).toBe("2.0");
       expect(body.response.service.operation).toBe("getCoord");
@@ -106,10 +105,8 @@ describe("searchGeocode", () => {
       expect(body.response.refined!.text).toBe(
         "서울특별시 중구 세종대로 110 (태평로1가)"
       );
-      console.log(body.response.refined!.structure);
       expect(body.response.refined!.structure).toBeDefined();
       expect(body.response.result!.crs).toBe("EPSG:4326");
-      console.log(body.response.result!.point);
       expect(body.response.result!.point).toBeDefined();
       expect(body.response.result!.point!.x).toBe("126.978346780");
       expect(body.response.result!.point!.y).toBe("37.566700969");

@@ -2,6 +2,10 @@
  * @reference https://business.juso.go.kr/addrlink/openApi/searchApi.do
  */
 
+// ============================================================================
+// Juso Address Search API Types
+// ============================================================================
+
 export interface ISearchAddressesOptions {
   countPerPage: number;
   currentPage: number;
@@ -45,6 +49,7 @@ export interface IJuso {
 }
 
 /**
+ * Juso API response body structure
  * @example {
  *   "results": {
  *     "common": {
@@ -118,6 +123,9 @@ export interface ISearchAddressesResponseBody {
   };
 }
 
+/**
+ * Extended Response interface for Juso address search API
+ */
 export interface ISearchAddressesResponse extends Response {
   json: () => Promise<ISearchAddressesResponseBody>;
 }

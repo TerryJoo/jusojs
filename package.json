@@ -1,6 +1,6 @@
 {
   "name": "jusojs",
-  "version": "1.1.0",
+  "version": "2.0.2",
   "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
   "author": {
@@ -28,8 +28,8 @@
     "build": "npm run build:esm && npm run build:cjs",
     "build:esm": "tsc && npm run copy:esm",
     "build:cjs": "tsc -p tsconfig.cjs.json && npm run copy:cjs",
-    "copy:esm": "cp lib/index.js lib/index.mjs && cp lib/index.js.map lib/index.mjs.map && cp lib/types.js lib/types.mjs && cp lib/types.js.map lib/types.mjs.map",
-    "copy:cjs": "cp lib-cjs/index.js lib/index.cjs && cp lib-cjs/index.js.map lib/index.cjs.map && cp lib-cjs/types.js lib/types.cjs && cp lib-cjs/types.js.map lib/types.cjs.map && rm -rf lib-cjs",
+    "copy:esm": "cp lib/index.js lib/index.mjs && cp lib/index.js.map lib/index.mjs.map",
+    "copy:cjs": "cp lib-cjs/index.js lib/index.cjs && cp lib-cjs/index.js.map lib/index.cjs.map && rm -rf lib-cjs",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },

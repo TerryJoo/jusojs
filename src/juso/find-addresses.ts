@@ -3,7 +3,7 @@ import type {
   ISearchAddressesResponse,
 } from "./types";
 
-export async function searchAddresses(
+export async function findAddresses(
   keyword: string,
   {
     countPerPage = 10,
