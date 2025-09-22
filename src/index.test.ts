@@ -15,6 +15,11 @@ import { searchAddresses } from "./index";
 // fetch 모킹을 위한 타입 정의
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
+const confirmKey = process.env["JUSO_CONFIRM_KEY"];
+if (!confirmKey) {
+  throw new Error("JUSO_CONFIRM_KEY is not set");
+}
+
 describe("searchAddresses", () => {
   beforeEach(() => {
     // fetch 모킹 설정
@@ -72,7 +77,9 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("도산대로");
+    const result = await searchAddresses("도산대로", {
+      confirmKey,
+    });
 
     expect(mockFetch).toHaveBeenCalledWith(
       "https://business.juso.go.kr/addrlink/addrLinkApi.do",
@@ -112,7 +119,7 @@ describe("searchAddresses", () => {
     const result = await searchAddresses("강남구", {
       countPerPage: 5,
       currentPage: 2,
-      confirmKey: "test-key",
+      confirmKey,
     });
 
     expect(result.results.common.currentPage).toBe(2);
@@ -139,7 +146,7 @@ describe("searchAddresses", () => {
     } as Response);
 
     const result = await searchAddresses("테스트", {
-      confirmKey: "invalid-key",
+      confirmKey,
     });
 
     expect(result.results.common.errorCode).toBe("E0001");
@@ -167,7 +174,9 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("테스트");
+    const result = await searchAddresses("테스트", {
+      confirmKey,
+    });
 
     expect(typeof result.results.common.currentPage).toBe("number");
     expect(typeof result.results.common.countPerPage).toBe("number");
@@ -195,7 +204,9 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("");
+    const result = await searchAddresses("", {
+      confirmKey,
+    });
 
     expect(result.results.common.errorCode).toBe("E0002");
     expect(result.results.common.errorMessage).toBe("검색어를 입력해주세요.");
@@ -204,7 +215,11 @@ describe("searchAddresses", () => {
   it("should handle network error", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-    await expect(searchAddresses("테스트")).rejects.toThrow("Network error");
+    await expect(
+      searchAddresses("테스트", {
+        confirmKey,
+      })
+    ).rejects.toThrow("Network error");
   });
 
   it("should handle malformed JSON response", async () => {
@@ -212,7 +227,11 @@ describe("searchAddresses", () => {
       json: () => Promise.reject(new Error("Invalid JSON")),
     } as Response);
 
-    await expect(searchAddresses("테스트")).rejects.toThrow("Invalid JSON");
+    await expect(
+      searchAddresses("테스트", {
+        confirmKey,
+      })
+    ).rejects.toThrow("Invalid JSON");
   });
 
   it("should use correct URL parameters", async () => {
@@ -237,7 +256,8 @@ describe("searchAddresses", () => {
       countPerPage: 20,
       currentPage: 1,
       resultType: "xml",
-      confirmKey: "test-key",
+
+      confirmKey,
     });
 
     const fetchCall = mockFetch.mock.calls[0];
@@ -248,7 +268,7 @@ describe("searchAddresses", () => {
       expect(body.get("countPerPage")).toBe("20");
       expect(body.get("currentPage")).toBe("1");
       expect(body.get("resultType")).toBe("xml");
-      expect(body.get("confmKey")).toBe("test-key");
+      expect(body.get("confmKey")).toBe(confirmKey);
     }
   });
 
@@ -323,7 +343,9 @@ describe("searchAddresses", () => {
       json: () => Promise.resolve(mockApiResponse),
     } as Response);
 
-    const result = await searchAddresses("테스트");
+    const result = await searchAddresses("테스트", {
+      confirmKey,
+    });
 
     expect(result.results.juso).toHaveLength(2);
     expect(result.results.juso[0]?.roadAddr).toBe(
