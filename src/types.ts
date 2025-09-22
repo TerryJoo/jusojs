@@ -6,9 +6,6 @@ export interface ISearchAddressesOptions {
   countPerPage: number;
   currentPage: number;
   resultType: string;
-  /**
-   * @default process.env.JUSO_CONFIRM_KEY
-   */
   confirmKey?: string;
 }
 
@@ -114,9 +111,13 @@ export interface IJuso {
  *   }
  * }
  */
-export interface ISearchAddressesResponse {
+export interface ISearchAddressesResponseBody {
   results: {
     common: ISearchAddressesResultCommon;
     juso: IJuso[];
   };
+}
+
+export interface ISearchAddressesResponse extends Response {
+  json: () => Promise<ISearchAddressesResponseBody>;
 }

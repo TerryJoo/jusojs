@@ -22,21 +22,8 @@ export async function searchAddresses(
   params.append("keyword", keyword);
   params.append("resultType", resultType);
 
-  const e = await fetch("https://business.juso.go.kr/addrlink/addrLinkApi.do", {
+  return fetch("https://business.juso.go.kr/addrlink/addrLinkApi.do", {
     method: "POST",
     body: params,
-  });
-  const data = (await e.json()) as ISearchAddressesResponse;
-  return {
-    ...data,
-    results: {
-      ...data.results,
-      common: {
-        ...data.results.common,
-        currentPage: Number(data.results.common?.currentPage),
-        countPerPage: Number(data.results.common?.countPerPage),
-        totalCount: Number(data.results.common?.totalCount),
-      },
-    },
-  };
+  }) as Promise<ISearchAddressesResponse>;
 }
