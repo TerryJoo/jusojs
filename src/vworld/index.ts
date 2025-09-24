@@ -2,13 +2,7 @@
 // VWorld Module Exports
 // ============================================================================
 
-export { getCoordinate } from "./get-coordinate";
+export * from "./get-coordinate";
 
 // VWorld API Types
-export type {
-  AddressStructure,
-  VWorldError,
-  VWorldGetCoordinateOptions,
-  VWorldGetCoordinateResponse,
-  VWorldGetCoordinateResponseBody,
-} from "./types";
+export type * from "./types";

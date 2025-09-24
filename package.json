@@ -1,6 +1,6 @@
 {
   "name": "jusojs",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "TypeScript client library for Korean road address search using the official juso.go.kr API",
   "license": "ISC",
   "author": {
