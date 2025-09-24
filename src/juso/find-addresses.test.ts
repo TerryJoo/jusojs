@@ -20,7 +20,7 @@ if (!confirmKey) {
   throw new Error("JUSO_CONFIRM_KEY is not set");
 }
 
-describe("searchAddresses", () => {
+describe("findAddresses", () => {
   beforeEach(() => {
     // fetch 모킹 설정
     global.fetch = mockFetch;

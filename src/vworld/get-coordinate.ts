@@ -2,7 +2,10 @@
 // VWorld Geocoding API Function
 // ============================================================================
 
-import type { ISearchGeocodeOptions, ISearchGeocodeResponse } from "./types";
+import type {
+  VWorldGetCoordinateOptions,
+  VWorldGetCoordinateResponse,
+} from "./types";
 
 /**
  * @http_example https://api.vworld.kr/req/address?
@@ -14,8 +17,8 @@ service=address&request=getcoord&version=2.0&crs=epsg:4326&address=%ED%9A%A8%EB%
  */
 export async function getCoordinate(
   address: string,
-  { key, ...options }: Partial<ISearchGeocodeOptions> = {}
-): Promise<ISearchGeocodeResponse> {
+  { key, ...options }: Partial<VWorldGetCoordinateOptions> = {}
+): Promise<VWorldGetCoordinateResponse> {
   if (!key) {
     throw new Error("key is required.");
   }
@@ -26,5 +29,5 @@ export async function getCoordinate(
         address,
       }
     ).toString()}`
-  ) as Promise<ISearchGeocodeResponse>;
+  ) as Promise<VWorldGetCoordinateResponse>;
 }

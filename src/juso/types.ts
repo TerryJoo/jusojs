@@ -6,14 +6,14 @@
 // Juso Address Search API Types
 // ============================================================================
 
-export interface ISearchAddressesOptions {
+export interface IFindAddressesOptions {
   countPerPage: number;
   currentPage: number;
   resultType: string;
   confirmKey?: string;
 }
 
-export interface ISearchAddressesResultCommon {
+export interface IFindAddressesResultCommon {
   errorMessage: string;
   countPerPage: number;
   totalCount: number;
@@ -116,9 +116,9 @@ export interface IJuso {
  *   }
  * }
  */
-export interface ISearchAddressesResponseBody {
+export interface IFindAddressesResponseBody {
   results: {
-    common: ISearchAddressesResultCommon;
+    common: IFindAddressesResultCommon;
     juso: IJuso[];
   };
 }
@@ -126,6 +126,6 @@ export interface ISearchAddressesResponseBody {
 /**
  * Extended Response interface for Juso address search API
  */
-export interface ISearchAddressesResponse extends Response {
-  json: () => Promise<ISearchAddressesResponseBody>;
+export interface IFindAddressesResponse extends Response {
+  json: () => Promise<IFindAddressesResponseBody>;
 }

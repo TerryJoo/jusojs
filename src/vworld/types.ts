@@ -2,7 +2,7 @@
 // VWorld Geocoding API Types
 // ============================================================================
 
-export interface ISearchGeocodeOptions {
+export interface VWorldGetCoordinateOptions {
   version: string;
   crs: string;
   refine: boolean;
@@ -34,7 +34,7 @@ export interface AddressStructure {
 /**
  * VWorld API response body structure
  */
-export interface ISearchGeocodeResponseBody {
+export interface VWorldGetCoordinateResponseBody {
   response: {
     service: {
       name: string;
@@ -88,6 +88,6 @@ export interface ISearchGeocodeResponseBody {
 /**
  * Extended Response interface for VWorld geocoding API
  */
-export interface ISearchGeocodeResponse extends Response {
-  json: () => Promise<ISearchGeocodeResponseBody>;
+export interface VWorldGetCoordinateResponse extends Response {
+  json: () => Promise<VWorldGetCoordinateResponseBody>;
 }

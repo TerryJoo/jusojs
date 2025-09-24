@@ -1,7 +1,4 @@
-import type {
-  ISearchAddressesOptions,
-  ISearchAddressesResponse,
-} from "./types";
+import type { IFindAddressesOptions, IFindAddressesResponse } from "./types";
 
 export async function findAddresses(
   keyword: string,
@@ -10,8 +7,8 @@ export async function findAddresses(
     currentPage = 1,
     resultType = "json",
     confirmKey,
-  }: Partial<ISearchAddressesOptions> = {}
-): Promise<ISearchAddressesResponse> {
+  }: Partial<IFindAddressesOptions> = {}
+): Promise<IFindAddressesResponse> {
   if (!confirmKey) {
     throw new Error("confmKey is required.");
   }
@@ -25,5 +22,5 @@ export async function findAddresses(
   return fetch("https://business.juso.go.kr/addrlink/addrLinkApi.do", {
     method: "POST",
     body: params,
-  }) as Promise<ISearchAddressesResponse>;
+  }) as Promise<IFindAddressesResponse>;
 }
